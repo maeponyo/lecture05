@@ -27,23 +27,43 @@ var formatDate = function(date){
 var getTimestamp = function(){
 	var now = new Date();
 	var timestamp = document.createElement("span");
+	timestamp.setAttribute("class", "timestamp");
 
 	timestamp.textContent = formatDate(now);
 	return timestamp;
 };
 
+var createDeleteFunctionOf = function(target){
+	var func = function(){
+		target.parentNode.removeChild(target);
+	};
+	return func;
+};
+
+var createDeleteButton = function(target){
+	var button = document.createElement("button");
+	button.setAttribute("type", "button");
+	button.textContent = "x";
+	button.addEventListener("click", createDeleteFunctionOf(target));
+	return button;
+}
+
 var createMessageElement = function(message){
-	var elm = document.createElement("li");
+	var elm = document.createElement("span");
 	elm.setAttribute("class", "message");
 	elm.textContent = message;
-	elm.appendChild(getTimestamp());
 	return elm;
 }
 
 var registerMessage = function(){
 	if(input.value.length > 0){
+		var container = document.createElement("li");
 		var message = createMessageElement(input.value)
-		output.appendChild(message);
+
+		container.appendChild(message);
+		container.appendChild(getTimestamp());
+		container.appendChild(createDeleteButton(container));
+		output.appendChild(container);
 	}
 };
 
