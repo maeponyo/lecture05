@@ -13,7 +13,13 @@ var formatDate = function(date){
 	date.getMonth() + "月" +
 	date.getDate() + "日" +
 	"（" + getDayOfWeekLabel(date.getDay()) + "）" +
-	date.getHours() + ":" + date.getMinutes();
+	date.getHours() + ":";
+
+	if(date.getMinutes() > 10){
+		string = string + date.getMinutes();
+	}else{
+		string = string + "0" + date.getMinutes();
+	}
 
 	return string;
 };
@@ -26,13 +32,17 @@ var getTimestamp = function(){
 	return timestamp;
 };
 
-var registerMessage = function(){
-	var message = document.createElement("li");
-	message.setAttribute("class", "message");
+var createMessageElement = function(message){
+	var elm = document.createElement("li");
+	elm.setAttribute("class", "message");
+	elm.textContent = message;
+	elm.appendChild(getTimestamp());
+	return elm;
+}
 
+var registerMessage = function(){
 	if(input.value.length > 0){
-		message.textContent = input.value;
-		message.appendChild(getTimestamp());
+		var message = createMessageElement(input.value)
 		output.appendChild(message);
 	}
 };
