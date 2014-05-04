@@ -2,6 +2,16 @@ var dayOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
 var input = document.querySelector("#input");
 var output = document.querySelector("#output");
 
+var board = {};
+
+/*
+ * 1件のメッセージの表示に関する関数
+ */
+
+/**
+ * 曜日を漢字に変換
+ * @param {integer} dow - 曜日を表す番号
+ */
 var getDayOfWeekLabel = function(dow){
 	return dayOfWeek[dow];
 };
@@ -24,49 +34,136 @@ var formatDate = function(date){
 	return string;
 };
 
-var getTimestamp = function(){
-	var now = new Date();
+var createTimestampView = function(date){
 	var timestamp = document.createElement("span");
 	timestamp.setAttribute("class", "timestamp");
 
-	timestamp.textContent = formatDate(now);
+	timestamp.textContent = formatDate(date);
 	return timestamp;
 };
 
-var createDeleteFunctionOf = function(target){
+var createDeleteFunctionOf = function(message, view){
 	var func = function(){
-		target.parentNode.removeChild(target);
+		removeMessage(message);
+		view.parentNode.removeChild(view);
 	};
 	return func;
 };
 
-var createDeleteButton = function(target){
+var createDeleteButton = function(message, view){
 	var button = document.createElement("button");
 	button.setAttribute("type", "button");
 	button.textContent = "x";
-	button.addEventListener("click", createDeleteFunctionOf(target));
+	button.addEventListener("click", createDeleteFunctionOf(message, view));
 	return button;
-}
+};
 
-var createMessageElement = function(message){
-	var elm = document.createElement("span");
-	elm.setAttribute("class", "message");
-	elm.textContent = message;
-	return elm;
+var createMessageView = function(message){
+	var view = document.createElement("li");
+
+	var msg = document.createElement("span");
+	msg.setAttribute("class", "message");
+	msg.textContent = message.text;
+
+	var timestamp = createTimestampView(message.timestamp);
+
+	var deleteButton = createDeleteButton(message, view);
+
+	view.appendChild(msg);
+	view.appendChild(timestamp);
+	view.appendChild(deleteButton);
+
+	return view;
+};
+
+/*
+ * メッセージオブジェクトの作成
+ */
+var getMessageID = function(){
+	board.id = board.id + 1;
+	return board.id;
+};
+
+var buildMessage = function(text){
+	var product = {
+		id: getMessageID(),
+		text: text,
+		timestamp: new Date()
+	};
+	return product;
+};
+
+
+/*
+ * 掲示板全体に関する関数
+ */
+var addMessage = function(message){
+	board.messages[message.id] = message;
+	storeBoardState();
+};
+
+var removeMessage = function(message){
+	delete board.messages[message.id];
+	storeBoardState();
 }
 
 var registerMessage = function(){
 	if(input.value.length > 0){
-		var container = document.createElement("li");
-		var message = createMessageElement(input.value)
+		var message = buildMessage(input.value);
 
-		container.appendChild(message);
-		container.appendChild(getTimestamp());
-		container.appendChild(createDeleteButton(container));
-		output.appendChild(container);
+		addMessage(message);
+
+		var view = createMessageView(message)
+		output.appendChild(view);
 	}
 };
 
-var registerMessageButton = document.querySelector("#registerMessage");
+var isValidBoardState = function(data){
+	return data.id != null && data.messages != null;
+};
 
-registerMessageButton.addEventListener("click",registerMessage);
+var initializeBoardState = function(){
+	board = {
+		id: 1,
+		messages:{}
+	};
+};
+
+var restoreView = function(){
+	var idList = Object.keys(board.messages);
+	if(idList != null && idList.length > 0){
+		idList.sort(function(a, b){
+			return a - b;
+		});
+		var index = 0;
+		while(index < idList.length){
+			var id = idList[index];
+			output.appendChild(createMessageView(board.messages[id]));
+			index = index + 1;
+		}
+	}
+};
+
+var storeBoardState = function(){
+	localforage.setItem("board", board);
+};
+
+var restoreBoardState = function(){
+	localforage.getItem("board", function(data){
+		if(isValidBoardState(data)){
+			board = data;
+			restoreView();
+		}else{
+			initializeBoardState();
+		}
+	});
+};
+
+var init = function(){
+	var registerMessageButton = document.querySelector("#registerMessage");
+	registerMessageButton.addEventListener("click",registerMessage);
+
+	restoreBoardState();
+};
+
+init();
