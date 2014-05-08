@@ -50,11 +50,11 @@ var isNonZeroNumber = function(a){
 };
 
 var isInteger = function(a){
-	return Number.isInteger(a);
+	return Number.isInteger(a); //整数かどうか
 };
 
 var isNaturalNumber = function(a){
-	return isInteger(a) && a > 0;
+	return isInteger(a) && a > 0;　　//整数かつ0より大きい
 };
 
 var isDivision = function(operator, a, b){
@@ -107,6 +107,7 @@ var startCalc = function(){
 		showResult(result);
 	}else{
 		showError();
+		output.value = "NaN";
 	}
 };
 
