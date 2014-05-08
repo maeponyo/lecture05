@@ -7,8 +7,8 @@
 		<link rel="stylesheet" type="text/css" href="css/calc.css">
 	</head>
 	<body>
-		<h2>計算機</h2>
 		<article id="calculator">
+			<h2>計算機</h2>
 			<div id="error" class="hide">
 				<h2>次の点を確認してください</h2>
 				<ul>
@@ -33,7 +33,26 @@
 				<button type="button" id="calcButton">計算</button>
 			</form>
 			<p>+は足し算,-は引き算,*は掛け算,/は割り算,%は割り算した時のあまりをそれぞれ求めます</p>
+	
+		
+			<h2>割引計算</h2>
+			<div id="error2" class="hide">
+				<h2>次の点を確認してください</h2>
+				<ul>
+					<li>入力したのは数値ですか？文字列を入力していませんか？</li>
+					<li>演算子を正しく選んでいますか？</li>
+					<li>0で割ろうとしていませんか？</li>
+					<li>自然数以外の数に対して「あまり」を計算しようとしていませんか？</li>
+				</ul>
+			</div>
+			<form>
+				<input type="text" id="operant_c"><p>円の</p>
+				<input type="text" id="operant_d"><p>%引きは</p>
+				<input type="text" id="output2"><p>円です</p>
+				<button type="button" id="calcButton2">計算</button>
+			</form>
 		</article>
 		<script src="js/calc.js"></script>
+		<script src="js/waribiki.js"></script>
 	</body>
 </html>
